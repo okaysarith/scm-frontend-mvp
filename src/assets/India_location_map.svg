@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="indiaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2a4a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1929;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1000" height="1000" fill="#020b1a"/>
+  
+  <!-- India Outline (Simplified) -->
+  <path 
+    d="M450,80 
+       L520,85 L560,100 L600,90 L650,110 L680,100 
+       L720,120 L750,150 L760,200 L780,250 
+       L770,300 L780,350 L760,400 L750,450 
+       L720,500 L700,550 L680,600 L650,650 
+       L600,700 L580,750 L560,800 L540,850 
+       L520,870 L500,880 L480,870 L460,850 
+       L440,800 L420,750 L400,700 L380,650 
+       L360,600 L350,550 L340,500 L320,450 
+       L310,400 L300,350 L290,300 L280,250 
+       L290,200 L310,150 L340,120 L380,100 
+       L420,85 Z"
+    fill="url(#indiaGradient)"
+    stroke="#2a4a6a"
+    stroke-width="2"
+    filter="url(#glow)"
+  />
+  
+  <!-- State Boundaries (Simplified) -->
+  <g stroke="#2a4a6a" stroke-width="0.5" fill="none" opacity="0.4">
+    <!-- Northern States -->
+    <path d="M400,150 L500,160 L600,150"/>
+    <path d="M350,200 L450,220 L550,210 L650,200"/>
+    <path d="M320,280 L400,290 L500,280 L600,290 L700,280"/>
+    
+    <!-- Central States -->
+    <path d="M340,380 L450,390 L550,380 L650,390"/>
+    <path d="M360,480 L480,490 L580,480 L680,490"/>
+    
+    <!-- Southern States -->
+    <path d="M380,580 L500,590 L620,580"/>
+    <path d="M420,680 L520,690 L600,680"/>
+  </g>
+  
+  <!-- Major Rivers (Subtle) -->
+  <g stroke="#1a3a5a" stroke-width="1" fill="none" opacity="0.3">
+    <path d="M350,300 Q450,320 550,300 Q650,280 720,290"/>
+    <path d="M380,450 Q480,470 580,450 Q650,430 700,450"/>
+  </g>
+  
+  <!-- Grid Overlay for positioning reference -->
+  <g stroke="#1a2a3a" stroke-width="0.3" opacity="0.2">
+    <line x1="0" y1="200" x2="1000" y2="200"/>
+    <line x1="0" y1="400" x2="1000" y2="400"/>
+    <line x1="0" y1="600" x2="1000" y2="600"/>
+    <line x1="0" y1="800" x2="1000" y2="800"/>
+    <line x1="200" y1="0" x2="200" y2="1000"/>
+    <line x1="400" y1="0" x2="400" y2="1000"/>
+    <line x1="600" y1="0" x2="600" y2="1000"/>
+    <line x1="800" y1="0" x2="800" y2="1000"/>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <text x="50" y="950" font-family="monospace" font-size="10" fill="#2a4a6a" opacity="0.5">
+    SUPPLY CHAIN NETWORK • INDIA
+  </text>
+</svg>

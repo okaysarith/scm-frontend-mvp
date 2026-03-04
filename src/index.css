@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile Manufacturing Supply Chain Digital Twin - Design System */
+/* Dark Industrial Theme with Teal Accents */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Core Dark Theme */
+    --background: 220 40% 6%;
+    --foreground: 210 20% 88%;
+    
+    /* Cards & Panels */
+    --card: 220 35% 10%;
+    --card-foreground: 210 20% 88%;
+    
+    --popover: 220 35% 12%;
+    --popover-foreground: 210 20% 88%;
+    
+    /* Primary - Teal */
+    --primary: 160 60% 40%;
+    --primary-foreground: 220 40% 6%;
+    --primary-glow: 160 60% 50%;
+    
+    /* Secondary - Slate */
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 210 20% 80%;
+    
+    /* Muted */
+    --muted: 220 20% 15%;
+    --muted-foreground: 215 15% 55%;
+    
+    /* Accent - Cyan */
+    --accent: 185 70% 45%;
+    --accent-foreground: 220 40% 6%;
+    
+    /* Status Colors */
+    --status-healthy: 150 60% 45%;
+    --status-warning: 38 95% 50%;
+    --status-critical: 0 75% 55%;
+    --status-offline: 220 10% 40%;
+    
+    /* Route Colors */
+    --route-supply: 200 100% 50%;
+    --route-assembly: 160 80% 45%;
+    --route-distribution: 38 100% 50%;
+    --route-reverse: 0 80% 55%;
+    --route-returns: 280 60% 55%;
+    
+    /* Destructive */
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* Borders & Inputs */
+    --border: 220 20% 20%;
+    --input: 220 20% 18%;
+    --ring: 160 60% 40%;
+    
+    --radius: 0.5rem;
+    
+    /* Custom Properties */
+    --glow-primary: 0 0 20px hsl(160 60% 40% / 0.3);
+    --glow-accent: 0 0 30px hsl(185 70% 45% / 0.25);
+    --glow-warning: 0 0 20px hsl(38 95% 50% / 0.4);
+    --glow-critical: 0 0 20px hsl(0 75% 55% / 0.4);
+    
+    /* Gradients */
+    --gradient-dark: linear-gradient(180deg, hsl(220 40% 8%) 0%, hsl(220 40% 4%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(220 35% 12%) 0%, hsl(220 35% 8%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(160 60% 40% / 0.15) 0%, transparent 70%);
+    
+    /* Sidebar */
+    --sidebar-background: 220 35% 8%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 160 60% 40%;
+    --sidebar-primary-foreground: 220 40% 6%;
+    --sidebar-accent: 220 25% 15%;
+    --sidebar-accent-foreground: 210 20% 85%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 160 60% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Technical/Data Text */
+  .font-mono {
+    font-family: 'JetBrains Mono', 'SF Mono', 'Monaco', monospace;
+  }
+}
+
+/* Custom Utility Classes */
+@layer utilities {
+  .text-status-healthy {
+    color: hsl(var(--status-healthy));
+  }
+  
+  .text-status-warning {
+    color: hsl(var(--status-warning));
+  }
+  
+  .text-status-critical {
+    color: hsl(var(--status-critical));
+  }
+  
+  .text-status-offline {
+    color: hsl(var(--status-offline));
+  }
+  
+  .bg-status-healthy {
+    background-color: hsl(var(--status-healthy));
+  }
+  
+  .bg-status-warning {
+    background-color: hsl(var(--status-warning));
+  }
+  
+  .bg-status-critical {
+    background-color: hsl(var(--status-critical));
+  }
+  
+  .glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+  
+  .glow-accent {
+    box-shadow: var(--glow-accent);
+  }
+  
+  .glow-warning {
+    box-shadow: var(--glow-warning);
+  }
+  
+  .glow-critical {
+    box-shadow: var(--glow-critical);
+  }
+  
+  .gradient-dark {
+    background: var(--gradient-dark);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
