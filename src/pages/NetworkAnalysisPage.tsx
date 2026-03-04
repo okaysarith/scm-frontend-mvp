@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { networkService } from '@/services/networkService';
 import NavigationSidebar from '@/components/NavigationSidebar';
 import CSVMergeComponent from '@/components/CSVMergeComponent';
@@ -91,6 +92,53 @@ const NetworkAnalysisPage: React.FC = () => {
   const [deliveryPeriod, setDeliveryPeriod] = useState('2');
   const [baselineLimit, setBaselineLimit] = useState('10000');
   const [costPerKm, setCostPerKm] = useState('2.5');
+  
+  // Data Source Toggle States
+  const [dataSource, setDataSource] = useState<'preloaded' | 'custom'>('preloaded');
+  const [orderFile, setOrderFile] = useState<File | null>(null);
+  const [pickFile, setPickFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // File validation function
+  const validateFile = (file: File): string | null => {
+    // Check file type
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      return 'File must be in CSV format';
+    }
+    
+    // Check file size (30MB limit)
+    const maxSize = 30 * 1024 * 1024; // 30MB in bytes
+    if (file.size > maxSize) {
+      return 'File size must be less than 30MB';
+    }
+    
+    return null;
+  };
+
+  // Handle file selection with validation
+  const handleOrderFileChange = (file: File | null) => {
+    if (file) {
+      const error = validateFile(file);
+      if (error) {
+        setError(error);
+        return;
+      }
+    }
+    setOrderFile(file);
+    setError(null);
+  };
+
+  const handlePickFileChange = (file: File | null) => {
+    if (file) {
+      const error = validateFile(file);
+      if (error) {
+        setError(error);
+        return;
+      }
+    }
+    setPickFile(file);
+    setError(null);
+  };
   
   // Results States
   const [nearestHub, setNearestHub] = useState<NearestHubResponse | null>(null);
@@ -187,16 +235,31 @@ const NetworkAnalysisPage: React.FC = () => {
   };
 
   const handleGenerateBaseline = async () => {
+    // Validation
+    if (dataSource === 'custom' && (!orderFile || !pickFile)) {
+      setError('Please upload both Order Data and Pick Data CSV files');
+      return;
+    }
+    
     const limit = baselineLimit ? parseInt(baselineLimit) : undefined;
     
     setLoading(prev => ({ ...prev, baseline: true }));
     setError(null);
+    setUploadProgress(0);
     
     try {
-      const result = await networkService.generateComprehensiveBaseline(limit);
+      const result = await networkService.generateComprehensiveBaseline(
+        dataSource,
+        limit,
+        orderFile || undefined,
+        pickFile || undefined,
+        (progress) => setUploadProgress(progress)
+      );
       setBaseline(result);
+      setUploadProgress(0);
     } catch (err) {
       setError('Failed to generate baseline');
+      setUploadProgress(0);
     } finally {
       setLoading(prev => ({ ...prev, baseline: false }));
     }
@@ -665,23 +728,107 @@ const NetworkAnalysisPage: React.FC = () => {
                       Generate baseline network using real CSV data
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-6">
+                    {/* Data Source Toggle */}
+                    <div className="space-y-3">
+                      <Label className="text-base font-medium">Data Source</Label>
+                      <RadioGroup value={dataSource} onValueChange={(value: 'preloaded' | 'custom') => setDataSource(value)}>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="preloaded" id="preloaded" />
+                          <Label htmlFor="preloaded" className="cursor-pointer">
+                            <div className="flex items-center gap-2">
+                              <Database className="h-4 w-4" />
+                              <span>Preloaded Data</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground ml-6">Uses existing system data (default)</p>
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="custom" id="custom" />
+                          <Label htmlFor="custom" className="cursor-pointer">
+                            <div className="flex items-center gap-2">
+                              <Upload className="h-4 w-4" />
+                              <span>Custom Data</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground ml-6">Upload your own CSV files</p>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
+                    {/* File Upload Section - Only show for custom data */}
+                    {dataSource === 'custom' && (
+                      <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+                        <div className="space-y-2">
+                          <Label htmlFor="orderFile" className="text-sm font-medium">Order Data CSV</Label>
+                          <Input
+                            id="orderFile"
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => handleOrderFileChange(e.target.files?.[0] || null)}
+                            className="cursor-pointer"
+                          />
+                          {orderFile && (
+                            <p className="text-xs text-muted-foreground">
+                              Selected: {orderFile.name} ({(orderFile.size / 1024 / 1024).toFixed(2)} MB)
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="pickFile" className="text-sm font-medium">Pick Data CSV</Label>
+                          <Input
+                            id="pickFile"
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => handlePickFileChange(e.target.files?.[0] || null)}
+                            className="cursor-pointer"
+                          />
+                          {pickFile && (
+                            <p className="text-xs text-muted-foreground">
+                              Selected: {pickFile.name} ({(pickFile.size / 1024 / 1024).toFixed(2)} MB)
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                          <strong>File Requirements:</strong> CSV format, max 30MB each. Must contain required columns for order and pick data.
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Upload Progress */}
+                    {uploadProgress > 0 && uploadProgress < 100 && (
+                      <div className="space-y-2">
+                        <Label className="text-sm">Upload Progress</Label>
+                        <Progress value={uploadProgress} className="w-full" />
+                        <p className="text-xs text-muted-foreground">{uploadProgress}% uploaded</p>
+                      </div>
+                    )}
+
+                    {/* Limit Input */}
                     <div className="space-y-2">
-                      <Label htmlFor="baselineLimit">Limit (optional)</Label>
+                      <Label htmlFor="baselineLimit">Record Limit (optional)</Label>
                       <Input
                         id="baselineLimit"
                         placeholder="e.g., 10000"
                         value={baselineLimit}
                         onChange={(e) => setBaselineLimit(e.target.value)}
                       />
+                      <p className="text-xs text-muted-foreground">
+                        Maximum number of orders to process (default: 10,000)
+                      </p>
                     </div>
+
+                    {/* Generate Button */}
                     <Button 
                       onClick={handleGenerateBaseline} 
-                      disabled={loading.baseline}
+                      disabled={loading.baseline || (dataSource === 'custom' && (!orderFile || !pickFile))}
                       className="w-full bg-cyan-600 hover:bg-cyan-700"
                     >
                       {loading.baseline ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <TrendingUp className="mr-2 h-4 w-4" />}
                       Generate Baseline
+                      {dataSource === 'custom' && ' from Custom Data'}
                     </Button>
                     
                     {baseline && (

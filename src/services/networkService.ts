@@ -50,11 +50,41 @@ export const networkService = {
     }),
   
   // 5. Generate baseline network using real CSV data
-  generateComprehensiveBaseline: (limit?: number) => 
-    apiRequest('/api/network/comprehensive-baseline', {
-      method: 'POST',
-      body: JSON.stringify(limit ? { limit } : {}),
-    }),
+  generateComprehensiveBaseline: (
+    dataSource: 'preloaded' | 'custom' = 'preloaded',
+    limit?: number,
+    orderFile?: File,
+    pickFile?: File,
+    onProgress?: (progress: number) => void
+  ) => {
+    if (dataSource === 'custom' && orderFile && pickFile) {
+      // Use FormData for file uploads
+      const formData = new FormData();
+      formData.append('data_source', dataSource);
+      if (limit) formData.append('limit', limit.toString());
+      formData.append('order_file', orderFile);
+      formData.append('pick_file', pickFile);
+      
+      return fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/network/comprehensive-baseline`, {
+        method: 'POST',
+        body: formData,
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error(`Baseline generation failed: ${response.statusText}`);
+        }
+        return response.json();
+      });
+    } else {
+      // Use JSON for preloaded data
+      return apiRequest('/api/network/comprehensive-baseline', {
+        method: 'POST',
+        body: JSON.stringify({ 
+          data_source: dataSource,
+          limit: limit 
+        }),
+      });
+    }
+  },
   
   // 6. Calculate dispatch compliance metrics
   calculateComprehensiveCompliance: (costPerKm: number = 2.5) => 
